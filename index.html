@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<head>
+  <link rel="stylesheet" href="main.css">
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<html>
+
+<body>
+
+  <p>Enter names in the fields, then click "Submit" to submit the form:</p>
+
+  <form id="frm1" action="/action_page.php">
+    Hostname: <input type="text" name="frigateName" id="frigateName" value="frigate"><br>
+    Frigate Instance Port: <input type="text" name="frigatePort" id="frigatePort" value="5000"><br>
+    Camera Name: <input type="text" name="cameraName" id="cameraName" value="camera"><br>
+
+    <label for="start">Start date:</label>
+
+    <input type="datetime-local" id="start" name="recording-start" value="2023-07-22">
+    <input type="datetime-local" id="end" name="recording-end" value="2023-07-22">
+    <br>Use Https? <input type="checkbox" id="useHttps">
+    <br>
+    <input type="button" onclick="myFunction()" value="Submit">
+  </form>
+
+  <input type="button" value="Download Recording" onclick="alert('Click submit first')" id="urlButton" target=”_blank”
+    disabled>
+
+  <script src="app.js"></script>
+  <script>
+
+    function datetimeLocal(datetime) {
+      const dt = new Date(datetime);
+      dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+      return dt.toISOString().slice(0, 19);
+    }
+
+    const startElement = document.getElementById('start');
+    const now = new Date();
+    startElement.value = datetimeLocal((new Date()).setMinutes(now.getMinutes() - 10));
+
+    const endElement = document.getElementById('end');
+    endElement.value = datetimeLocal(now);
+
+
+    const frigateName = document.getElementById('frigateName');
+    const frigatePort = document.getElementById('frigatePort');
+    const cameraName = document.getElementById('cameraName');
+    const urlElement = document.getElementById('url');
+
+    const urlButton = document.getElementById('urlButton');
+
+    let targetUrl = "index.html";
+
+    function myFunction() {
+      console.log(startElement.value); // prints "2017-06-01"
+      console.log(startElement.valueAsNumber); // prints 1496275200000, a JavaScript timestamp (ms)
+      let targetUrl = `http://${frigateName.value}:${frigatePort.value}/api/${cameraName.value}/start/${startElement.valueAsNumber / 1000}/end/${endElement.valueAsNumber / 1000}/clip.mp4`;
+      if (document.getElementById('useHttps').checked)
+        targetUrl = `https://${frigateName.value}:${frigatePort.value}/api/${cameraName.value}/start/${startElement.valueAsNumber / 1000}/end/${endElement.valueAsNumber / 1000}/clip.mp4`;
+      console.log(targetUrl);
+
+      urlButton.disabled = false;
+      urlButton.onclick = function () {
+        // location.href = targetUrl;
+        window.open(targetUrl, '_blank');
+      };
+    }
+
+  </script>
+
+</body>
+</h>
